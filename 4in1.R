@@ -1,0 +1,48 @@
+# Set locale to get "Thu, Fri, Sat", not "四, 五, 六" for weekdays
+# 修改本地时间的环境变量，使用英文而非中文
+Sys.setlocale("LC_TIME", "en_US.UTF-8")
+
+data.full <- read.table("household_power_consumption.txt", header=T, sep=";", na.strings="?")
+data.need <- subset(data.full, Date=="1/2/2007" | Date=="2/2/2007")
+data <- transform(data.need, dt=paste(Date, Time, sep=" "))
+data <- transform(data, dt=strptime(dt, format="%d/%m/%Y %H:%M:%S"))
+
+# Plot1
+png("plot1.png")
+hist(data$Global_active_power, col="red", 
+     main="Global Active Power", 
+     xlab="Global Active Power (kilowatts)")
+dev.off()
+
+# Plot2
+png("plot2.png")
+plot(data$dt, data$Global_active_power, type="l",
+     xlab="", ylab="Global Active Power (kilowatts)")
+dev.off()
+
+# Plot3
+png("plot3.png")
+plot(data$dt, data$Sub_metering_1, type="l",
+     xlab="", ylab="Energy sub metering")
+lines(data$dt, data$Sub_metering_2, col="red")
+lines(data$dt, data$Sub_metering_3, col="blue")
+legend("topright", legend=c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"),
+       col=c("black", "red", "blue"), lty=1)
+dev.off()
+
+# Plot4
+png("plot4.png")
+par(mfrow=c(2,2))
+plot(data$dt, data$Global_active_power, type="l",
+     xlab="", ylab="Global Active Power")
+plot(data$dt, data$Voltage, type="l",
+     xlab="datetime", ylab="Voltage")
+plot(data$dt, data$Sub_metering_1, type="l",
+     xlab="", ylab="Energy sub metering")
+lines(data$dt, data$Sub_metering_2, col="red")
+lines(data$dt, data$Sub_metering_3, col="blue")
+legend("topright", legend=c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"),
+       col=c("black", "red", "blue"), lty=1, bty="n")
+plot(data$dt, data$Global_reactive_power, type="l",
+     xlab="datetime", ylab="Global_reactive_power")
+dev.off()
